@@ -1,0 +1,4 @@
+# A Spark Worker will be started on each of the machines listed below.
+<% @slaves.keys.sort.each do |hostname| %>
+<%= @slaves[hostname] %>
+<% end %>

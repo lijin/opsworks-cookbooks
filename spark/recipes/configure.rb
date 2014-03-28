@@ -170,7 +170,7 @@ else
   file spark_configured_filename do
     mode "0755"
     content "#{spark_master_ip}"
-    action :create
+    action :create_if_missing
   end
   
   # [SSH] Wait for worker to be started by master
@@ -178,11 +178,6 @@ else
     retries      5 # wait for worker to start
     retry_delay 60 # seconds
     command "test -f #{pid} && kill -0 `cat #{pid}` > /dev/null 2>&1"
-  end
-
-  # [SSH] Delete the temp file
-  file spark_configured_filename do
-    action :delete
   end
 
   # TODO: Deal with change of master

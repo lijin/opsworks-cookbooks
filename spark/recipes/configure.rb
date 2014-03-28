@@ -122,7 +122,7 @@ if node[:opsworks][:instance][:hostname] == master
   
   # Check if slaves are configured and point to this master
   slaves.keys.each do |hostname|
-    execute "check-spark-configured-file" do
+    execute "check-spark-configured-file_#{hostname}_#{slaves[hostname]}" do
       retries      5 # wait for slaves to be configured
       retry_delay 60 # seconds
       command "sudo -u #{node[:spark][:user]} ssh -o StrictHostKeyChecking=no #{node[:spark][:user]}@#{slaves[hostname]} 'cat #{spark_configured_filename} | grep #{spark_master_ip}'"
@@ -170,7 +170,8 @@ else
   file spark_configured_filename do
     mode "0755"
     content "#{spark_master_ip}"
-    action :create_if_missing
+    action :create
+    not_if "test -f #{pid} && kill -0 `cat #{pid}` > /dev/null 2>&1"
   end
   
   # [SSH] Wait for worker to be started by master
